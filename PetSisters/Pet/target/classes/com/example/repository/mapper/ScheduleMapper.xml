@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.repository.mapper.ScheduleMapper">
+
+	<sql id="BaseColumns">
+		s_num, s_date, m_num
+	</sql>
+	
+    <select id="selectSchedule" parameterType="int" resultType="com.example.pet.domain.Schedule">
+        SELECT <include refid="BaseColumns" />
+        FROM schedule
+        WHERE m_num = #{m_num} ORDER BY s_date ASC
+    </select>
+    
+    <insert id="insertSchedule" parameterType="com.example.pet.domain.Schedule">
+        INSERT INTO Schedule (s_num, s_date, m_num)
+        VALUES (SCHEDULEPK2.nextval, #{s_date}, #{m_num})
+    </insert>
+    
+    	<!-- 추가된 board_num 찾기 -->
+ 	<select id="selectScheduleNum"  resultType="int">
+		SELECT s_num
+		FROM schedule
+	</select>
+	
+   
+    
+    <delete id="deleteSchedule" parameterType="com.example.pet.domain.Schedule">
+        DELETE FROM Schedule
+        WHERE s_num = #{s_num}
+    </delete>
+    
+    <delete id="deleteSchedule2" parameterType="com.example.pet.domain.Schedule">
+        DELETE FROM Schedule
+        WHERE m_num = #{m_num} AND s_date = #{s_date}
+    </delete>
+    
+    <update id="updateSchedule" parameterType="com.example.pet.domain.Schedule">
+        UPDATE Schedule
+        SET s_date=#{s_date}
+        WHERE m_num = #{m_num} AND s_num = #{s_num}
+    </update>
+    
+     <insert id="insertSchedule2" parameterType="com.example.pet.domain.Schedule">
+        INSERT INTO Schedule (s_num, s_date, m_num)
+        VALUES (#{s_num}, #{s_date}, #{m_num})
+    </insert>
+    
+</mapper>

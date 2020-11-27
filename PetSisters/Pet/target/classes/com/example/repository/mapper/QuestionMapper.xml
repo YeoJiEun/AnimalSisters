@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.repository.mapper.QuestionMapper">
+	<cache />
+
+	<sql id="Question">
+		question_num AS questionNum,
+		m_num AS mNum,
+		question_title AS questionTitle,
+		question_content AS questionContent,
+		question_date AS questionDate,
+		m_type AS mType,
+		question_hits AS questionHits
+	</sql>
+	
+	<!-- 모든 Question 찾기 -->
+	<select id="selectAllQuestion" resultType="com.example.pet.domain.Question">
+		SELECT QUESTION.QUESTION_NUM AS questionNum, 
+			   MEMBER.M_NICKNAME AS mNickname, 
+			   QUESTION.QUESTION_TITLE AS questionTitle, 
+			   TO_CHAR(QUESTION.QUESTION_DATE, 'YYYY-MM-DD') AS questionDate, 
+			   QUESTION.QUESTION_HITS AS questionHits
+		FROM QUESTION JOIN MEMBER ON QUESTION.M_NUM = MEMBER.M_NUM 
+		ORDER BY QUESTION.QUESTION_NUM
+	</select>
+
+ 	<!-- findValue로 Question 찾기 -->
+	<select id="selectQuestionByFindValue" parameterType="String" resultType="com.example.pet.domain.Question">
+		SELECT QUESTION.QUESTION_NUM AS questionNum, 
+			   MEMBER.M_NICKNAME AS mNickname, 
+			   QUESTION.QUESTION_TITLE AS questionTitle, 
+			   TO_CHAR(QUESTION.QUESTION_DATE, 'YYYY-MM-DD') AS questionDate,  
+			   QUESTION.QUESTION_HITS AS questionHits
+		FROM QUESTION JOIN MEMBER ON QUESTION.M_NUM = MEMBER.M_NUM 		
+		WHERE QUESTION.QUESTION_TITLE LIKE '%'||#{findValue}||'%'
+			OR QUESTION.QUESTION_CONTENT LIKE '%'||#{findValue}||'%'
+			OR MEMBER.M_NICKNAME LIKE '%'||#{findValue}||'%'
+		ORDER BY QUESTION.QUESTION_NUM
+	</select>
+	
+	<!-- question_num으로 Question 찾기 -->
+	<select id="selectQuestionByNum" parameterType="int" resultType="com.example.pet.domain.Question">
+		SELECT QUESTION.QUESTION_NUM AS questionNum, 
+			   QUESTION.M_NUM AS mNum,
+			   QUESTION.QUESTION_TITLE AS questionTitle,
+			   QUESTION.QUESTION_CONTENT AS questionContent, 
+			   TO_CHAR(QUESTION.QUESTION_DATE, 'YYYY-MM-DD') AS questionDate, 
+			   QUESTION.M_TYPE AS mType,
+			   QUESTION.QUESTION_HITS AS questionHits,
+			   MEMBER.M_NICKNAME AS mNickname
+		FROM QUESTION JOIN MEMBER ON QUESTION.M_NUM = MEMBER.M_NUM 
+		WHERE QUESTION.QUESTION_NUM = #{questionNum}
+		ORDER BY QUESTION.QUESTION_NUM
+	</select>
+	
+	<!-- m_type으로 Question 찾기 -->
+	<select id="selectQuestionByMType" parameterType="String" resultType="com.example.pet.domain.Question">
+		SELECT QUESTION.QUESTION_NUM AS questionNum, 
+			   MEMBER.M_NICKNAME AS mNickname, 
+			   QUESTION.QUESTION_TITLE AS questionTitle, 
+			   TO_CHAR(QUESTION.QUESTION_DATE, 'YYYY-MM-DD') AS questionDate, 
+			   QUESTION.QUESTION_HITS AS questionHits
+		FROM QUESTION JOIN MEMBER ON QUESTION.M_NUM = MEMBER.M_NUM 
+		WHERE QUESTION.M_TYPE = #{mType}
+		ORDER BY QUESTION.QUESTION_NUM
+	</select>
+	
+	<!-- 추가된 question_num 찾기 -->
+ 	<select id="selectQuestionNum"  resultType="int">
+		SELECT QUESTION_NUM AS questionNum
+		FROM QUESTION
+	</select>
+	
+	<!-- m_num으로 Question 찾기 -->
+	<select id="selectQuestionBymNum" parameterType="int" resultType="com.example.pet.domain.Question">
+		SELECT QUESTION.QUESTION_NUM AS questionNum, 
+			   QUESTION.M_NUM AS mNum,
+			   QUESTION.QUESTION_TITLE AS questionTitle,
+			   QUESTION.QUESTION_CONTENT AS questionContent, 
+			   TO_CHAR(QUESTION.QUESTION_DATE, 'YYYY-MM-DD') AS questionDate, 
+			   QUESTION.M_TYPE AS mType,
+			   QUESTION.QUESTION_HITS AS questionHits,
+			   MEMBER.M_NICKNAME AS mNickname
+		FROM QUESTION JOIN MEMBER ON QUESTION.M_NUM = MEMBER.M_NUM 
+		WHERE QUESTION.M_NUM = #{mNum}
+		ORDER BY QUESTION.QUESTION_NUM
+	</select>
+	
+	
+
+	<!-- Question 추가 -->
+	<insert id="insertQuestion" parameterType="com.example.pet.domain.Question">
+		INSERT INTO QUESTION(question_num, m_num, question_title, question_content, question_date, m_type, question_hits)
+		VALUES (#{questionNum}, #{mNum}, #{questionTitle}, #{questionContent}, SYSDATE, #{mType}, 0)
+	</insert>
+
+	<!-- Question 수정 -->
+	<update id="updateQuestion" parameterType="com.example.pet.domain.Question">
+		UPDATE QUESTION 
+		SET question_title = #{questionTitle}, question_content = #{questionContent}, question_date = SYSDATE
+		WHERE question_num = #{questionNum}
+	</update>
+	
+	<!-- Question hits ++ -->
+	<update id="updateQuestionHits" parameterType="int">
+		UPDATE QUESTION 
+		SET question_hits = question_hits + 1
+		WHERE question_num = #{questionNum}
+	</update>
+	
+	<!-- Question 삭제 -->
+	<delete id="deleteQuestion" parameterType="int">
+		DELETE FROM QUESTION
+		WHERE question_num = #{questionNum}
+	</delete>
+
+</mapper>

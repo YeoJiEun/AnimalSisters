@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.repository.mapper.ReservationMapper">
+
+	<sql id="BaseColumns">
+		b_num, r_completeTF, r_confirmTF, r_date, m_num, sitter_num
+	</sql>
+
+	<select id="selectReservation" resultType="com.example.pet.domain.Reservation">
+		Select <include refid="BaseColumns"/>
+		from reservation
+		where b_num = #{b_num} and m_num = #{m_num} and r_date = #{r_date}
+	</select>
+	
+	<!-- sitterNum으로 시터가 갖는 모든 Reservation 찾기 -->
+	<select id="selectReservationBySitterNum"  parameterType="int" resultType="com.example.pet.domain.Reservation">
+		select m.m_phone AS m_phone, r.b_num AS b_num, r.m_num AS m_num, r.sitter_num AS sitter_num,b.b_title AS b_title, m.m_name AS m_name, r.r_date AS r_date, r.r_completeTF AS r_completeTF, r.r_confirmTF AS r_confirmTF
+		from reservation r, member m, board b
+		where r.sitter_num = #{sitter_num} and r.m_num = m.m_num and r.b_num = b.b_num
+	</select>
+	
+	<select id="findSitter" parameterType="int" resultType="int">
+		Select m_num
+		from board
+		where b_num = #{b_num}
+	</select>
+	
+     <!-- 일반 m_num으로 ReservationDetail 찾기 -->
+	<select id="selectReservationByNum" parameterType="int" resultType="com.example.pet.domain.Reservation">
+		select  r.b_num AS b_num, r.sitter_num AS sitter_num,b.b_title AS b_title, m.m_name AS m_name, r.r_date AS r_date, r.r_completeTF AS r_completeTF, r.r_confirmTF AS r_confirmTF
+		from reservation r, member m, board b
+		where r.m_num=#{m_num} and r.sitter_num = m.m_num and r.b_num = b.b_num
+	</select>
+	
+	<!-- findValue로 Reservation 찾기 -->
+	<select id="selectReservationByFindValue" parameterType="String" resultType="com.example.pet.domain.Reservation">
+		SELECT  <include refid="BaseColumns"/>
+		FROM BOARD	
+		WHERE B_TITLE LIKE '%'||#{findValue}||'%'
+			OR B_detail LIKE '%'||#{findValue}||'%'
+			OR B_WHERE LIKE '%'||#{findValue}||'%'
+			OR B_type LIKE '%'||#{findValue}||'%'	
+	</select>
+	
+	<!-- 추가된 reservation_num 찾기 -->
+ 	<select id="selectReservationNum"  resultType="int">
+		SELECT b_num
+		FROM reservation
+	</select>
+	
+	<!-- reservation 추가 -->
+	<insert id="insertReservation" parameterType="com.example.pet.domain.Reservation">
+		insert into reservation (b_num, r_completeTF, r_confirmTF, R_date, M_num, Sitter_num)
+		values (#{b_num}, #{r_completeTF}, #{r_confirmTF}, #{r_date}, #{m_num}, #{sitter_num})
+	</insert>
+	
+	<!-- Reservation 삭제 -->
+	<delete id="deleteReservation"  >
+		DELETE FROM Reservation
+		WHERE b_num = #{b_num} and m_num = #{m_num} and r_date = #{r_date}
+	</delete>
+	
+	<!-- Reservation 수정 -->
+	<update id="updateReservation" parameterType="com.example.pet.domain.Reservation">
+		UPDATE Reservation
+		SET b_num = #{b_num}, r_confirmTF= #{r_confirmTF}, r_completeTF = #{r_completeTF}
+		WHERE b_num = #{b_num} and m_num = #{m_num} and r_date = #{r_date}
+	</update>
+
+</mapper>

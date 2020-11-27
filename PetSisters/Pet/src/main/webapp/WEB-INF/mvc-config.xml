@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xmlns:mvc="http://www.springframework.org/schema/mvc"
+   xmlns:context="http://www.springframework.org/schema/context"
+   xmlns:c="http://www.springframework.org/schema/c"
+   xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+      http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+      http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+
+   <!-- <context:component-scan base-package="com.example.pet.controller" /> -->
+   <context:component-scan base-package="com.example" />
+
+   <mvc:resources location="/resources/" mapping="/resources/**"/>
+
+    <mvc:annotation-driven />
+
+   <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+           <!-- Example: a logical view name of 'showMessage' is mapped to '/WEB-INF/jsp/showMessage.jsp' -->
+           <property name="prefix" value="/view/"/>
+           <property name="suffix" value=".jsp"/>
+   </bean>
+   
+   <!-- File upload & filepath -->
+   <bean class="org.springframework.web.multipart.commons.CommonsMultipartResolver" id="multipartResolver"> </bean>
+   <bean id ="uploadDir" class="java.lang.String">
+   		<constructor-arg value="C:/Users/capel/Pictures/petsitter" />
+   </bean>
+
+   
+   <!-- main에서 About 페이지로 가는 mapping -->
+   <mvc:view-controller path="/about" view-name="about/about_main" />
+   
+   <!-- question/main에서 question/insertForm 페이지로 가는 mapping -->
+   <mvc:view-controller path="question/insertForm.do" view-name="question/insertForm"/>
+ 
+   
+   <mvc:view-controller path="/board_main" view-name="board/board_main" />
+   <mvc:view-controller view-name="board/insertForm" path="board/insertForm.do"/>
+   <mvc:view-controller path="/used_market_main" view-name="used_market/used_market_main" />
+   
+   <!-- navbar mapping -->
+   <mvc:view-controller path="/login" view-name="user/login" />
+   <mvc:view-controller path="/logout" view-name="user/logout" />
+   <mvc:view-controller path="/register" view-name="user/register" />
+
+   <!-- main으로 가는 mapping -->
+   <mvc:view-controller path="/main" view-name="main" />
+   
+
+</beans>

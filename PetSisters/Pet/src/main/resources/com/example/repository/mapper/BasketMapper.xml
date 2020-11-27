@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.repository.mapper.BasketMapper">
+
+	<sql id="BaseColumns">
+		b_num, m_num
+	</sql>
+
+	<!-- 모든 Basket 찾기 -->
+	<select id="selectAllBasket" parameterType="int" resultType="com.example.pet.domain.Basket">
+		SELECT b_num, m_num
+		FROM Basket
+		WHERE m_num = #{m_num}
+	</select>
+
+     <!-- b_num으로 BasketDetail 찾기 -->
+	<select id="selectBasketByNum" parameterType="int" resultType="com.example.pet.domain.Board">
+		SELECT board.m_num AS m_num, basket.b_num AS b_num, board.b_date AS b_date , board.b_where AS b_where, board.b_price AS price, board.b_detail AS b_detail, board.b_type AS b_type, board.b_title AS b_title
+		FROM BOARD board, BASKET basket
+		WHERE basket.b_num = board.b_num AND basket.M_NUM=#{m_num}
+	</select>
+	
+	<!-- findValue로 Basket 찾기 -->
+	<select id="selectBasketByFindValue" parameterType="String" resultType="com.example.pet.domain.Basket">
+		SELECT  <include refid="BaseColumns"/>
+		FROM BOARD	
+		WHERE B_TITLE LIKE '%'||#{findValue}||'%'
+			OR B_detail LIKE '%'||#{findValue}||'%'
+			OR B_WHERE LIKE '%'||#{findValue}||'%'
+			OR B_type LIKE '%'||#{findValue}||'%'
+	</select>
+	
+	<!-- 추가된 basket_num 찾기 -->
+ 	<select id="selectBasketNum"  resultType="int">
+		SELECT b_num
+		FROM basket
+	</select>
+	
+	<!-- basket 추가 -->
+	<insert id="insertBasket" parameterType="com.example.pet.domain.Basket">
+		INSERT INTO Basket
+		VALUES (#{b_num}, #{m_num})
+	</insert>
+	
+	<!-- Basket 삭제 -->
+	<delete id="deleteBasket" parameterType="int" >
+		DELETE FROM BASKET
+		WHERE b_num = #{b_num}
+	</delete>
+	
+	<!-- Basket 수정 -->
+	<update id="updateBasket" parameterType="com.example.pet.domain.Basket">
+		UPDATE BOARD
+		SET b_detail = #{b_detail}, b_price = #{price}, b_type = #{b_type}, b_title = #{b_title} , b_where = #{b_where}
+		WHERE b_num = #{b_num}
+	</update>
+
+</mapper>

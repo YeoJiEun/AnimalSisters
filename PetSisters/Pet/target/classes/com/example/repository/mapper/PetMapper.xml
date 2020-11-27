@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.repository.mapper.PetMapper">
+
+	<sql id="BaseColumns">
+		p_num, m_num, p_name, p_age,
+		p_gender, p_detail, p_type
+	</sql>
+
+    
+    <select id="selectPet" parameterType="hashmap" resultType="com.example.pet.domain.Pet">
+        SELECT <include refid="BaseColumns" />
+        FROM pet
+        WHERE m_num = #{m_num}
+    </select>
+    
+    <insert id="insertPet" parameterType="com.example.pet.domain.Pet">
+        INSERT INTO Pet (p_num, m_num, p_name, p_age, p_gender, p_detail, p_type)
+        VALUES (PETPK.nextval, #{m_num}, #{p_name}, #{p_age}, #{p_gender}, #{p_detail}, #{p_type})
+    </insert>
+    
+    <delete id="deletePet" parameterType="com.example.pet.domain.Pet">
+        DELETE FROM Pet
+        WHERE m_num = #{m_num}
+    </delete>
+    
+    <update id="updatePet" parameterType="com.example.pet.domain.Pet">
+        UPDATE Pet
+        SET p_name=#{p_name}, p_age=#{p_age}, p_gender=#{p_gender}, p_detail=#{p_detail}, p_type=#{p_type}
+        WHERE m_num = #{m_num} AND p_num = #{p_num}
+    </update>
+</mapper>

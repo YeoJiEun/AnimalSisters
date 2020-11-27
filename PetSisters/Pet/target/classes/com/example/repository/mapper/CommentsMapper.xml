@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.repository.mapper.CommentsMapper">
+	<cache />
+
+	<sql id="Comments">
+		c_num AS cNum,
+		m_num AS mNum,
+		cr_num AS crNum,
+		c_type AS cType,
+		c_content AS cContent,
+		c_date AS cDate
+	</sql>
+
+	<!-- questionNum에 대한 모든 Question Comment 찾기   ||  uNum에 대한 모든 UsedMarket Comment 찾기 -->
+	<select id="selectAllComment" parameterType="hashmap" resultType="com.example.pet.domain.Comments">
+		SELECT COMMENTS.C_NUM AS cNum,
+			   COMMENTS.M_NUM AS mNum, 
+			   COMMENTS.CR_NUM AS crNum,
+			   COMMENTS.C_TYPE AS cType,
+			   COMMENTS.C_CONTENT AS cContent,
+			   TO_CHAR(COMMENTS.C_DATE, 'YYYY-MM-DD') AS cDate, 
+			   MEMBER.M_NICKNAME AS mNickname
+		FROM COMMENTS JOIN MEMBER ON COMMENTS.M_NUM = MEMBER.M_NUM 
+		WHERE COMMENTS.CR_NUM = #{crNum} AND COMMENTS.C_TYPE = #{cType}
+		ORDER BY COMMENTS.C_NUM
+	</select>
+	
+	<!-- questionNum에 대한 Question Comment 찾기   ||  uNum에 대한 UsedMarket Comment 찾기 -->
+	<select id="selectCommentByNum" parameterType="int" resultType="com.example.pet.domain.Comments">
+		SELECT COMMENTS.C_NUM AS cNum,
+			   COMMENTS.M_NUM AS mNum, 
+			   COMMENTS.CR_NUM AS crNum,
+			   COMMENTS.C_TYPE AS cType,
+			   COMMENTS.C_CONTENT AS cContent,
+			   TO_CHAR(COMMENTS.C_DATE, 'YYYY-MM-DD') AS cDate, 
+			   MEMBER.M_NICKNAME AS mNickname
+		FROM COMMENTS JOIN MEMBER ON COMMENTS.M_NUM = MEMBER.M_NUM 
+		WHERE COMMENTS.C_NUM = #{cNum}
+	</select>
+	
+	<!-- 추가된c_num 찾기 -->
+ 	<select id="selectCommentNum"  resultType="int">
+		SELECT C_NUM AS cNum
+		FROM COMMENTS
+		ORDER BY C_NUM
+	</select>
+	
+	<!-- Comment 추가 -->
+	<insert id="insertComment" parameterType="com.example.pet.domain.Comments">
+		INSERT INTO COMMENTS(c_num, m_num, cr_num, c_type, c_content, c_date)
+		VALUES (#{cNum}, #{mNum}, #{crNum}, #{cType}, #{cContent}, SYSDATE)
+	</insert>
+	
+	<!-- Comment 수정 -->
+	<update id="updateComment" parameterType="com.example.pet.domain.Comments">
+		UPDATE COMMENTS 
+		SET c_content = #{cContent}, c_date = SYSDATE
+		WHERE c_num = #{cNum}
+	</update>
+	
+	<!-- Comment 삭제 -->
+	<delete id="deleteComment" parameterType="int">
+		DELETE FROM COMMENTS
+		WHERE c_num = #{cNum}
+	</delete>
+	
+</mapper>

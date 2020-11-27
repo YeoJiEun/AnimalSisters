@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.repository.mapper.PointMapper">
+
+	<sql id="BaseColumns">
+		po_num, po_balance, po_log, po_date, m_num
+	</sql>
+    
+    <select id="selectPoint" parameterType="int" resultType="com.example.pet.domain.Point">
+        SELECT <include refid="BaseColumns" />
+        FROM Point
+        WHERE m_num = #{m_num} ORDER BY po_num ASC
+    </select>
+    
+    <insert id="insertPoint" parameterType="com.example.pet.domain.Point">
+        INSERT INTO Point(po_num, po_balance, po_log, po_date, m_num)
+        VALUES (POINTPK.nextval, #{po_balance}, #{po_log}, #{po_date}, #{m_num})
+    </insert>
+    
+    <delete id="deletePoint">
+        DELETE FROM Point
+        WHERE po_num = #{po_num}
+    </delete>
+    
+    <update id="updatePoint" parameterType="com.example.pet.domain.Point">
+        UPDATE Point
+        SET po_balance=#{po_balance}, po_log=#{po_log}, po_date=#{po_date}
+        WHERE po_num = #{po_num} AND m_num=#{m_num}
+    </update>
+</mapper>

@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.repository.mapper.UserMapper">
+	<cache />
+
+	<sql id="BaseColumns">
+		m_num AS m_num, 
+		m_id AS id, 
+		m_pw AS pw,
+		m_name AS name, 
+		m_nickname AS nickname,
+		m_phone AS phone, 
+		m_addr AS addr, 
+		m_type AS m_type
+	</sql>
+	
+	<sql id="SitterColumns">
+		m_num AS m_num, 
+		s_age AS age, 
+		s_carenum AS careNum, 
+		s_picture AS picture
+	</sql>
+
+	<!-- id로 회원정보 찾기 -->
+	<select id="selectUser" resultType="com.example.pet.domain.User">
+		SELECT <include refid="BaseColumns" />
+        FROM MEMBER
+        WHERE m_id = #{id} AND m_pw = #{pw}
+	</select>
+	
+	<!-- 회원가입 -->
+	<insert id="insertUser" parameterType="com.example.pet.domain.User">
+		<selectKey keyProperty="m_num" resultType="int" order="BEFORE">
+        	 SELECT seq_mem.nextval AS m_num FROM DUAL          
+     	</selectKey>
+		INSERT INTO MEMBER(m_num, m_id, m_pw, m_name, m_nickname, m_phone, m_addr, m_type)
+		VALUES (#{m_num}, #{id}, #{pw}, #{name}, #{nickname}, #{phone}, #{addr}, #{m_type})
+	</insert>
+	
+	<!-- 회원정보 수정 -->
+	<update id="updateUser" parameterType="com.example.pet.domain.User">
+		UPDATE MEMBER
+		SET
+			m_pw = #{pw}, 
+			m_name = #{name}, 
+			m_nickname = #{nickname}, 
+			m_phone = #{phone}, 
+			m_addr = #{addr}, 
+			m_type = #{m_type}
+		WHERE
+			m_num = #{m_num}
+	</update>
+	
+	<!-- 회원탈퇴 -->
+	<delete id="deleteUser" parameterType="int">
+		DELETE MEMBER
+		WHERE m_num = #{m_num}
+	</delete>
+	
+	<!-- 펫시터 찾기 -->
+	<select id="selectPetSitter" resultType="com.example.pet.domain.PetSitter">
+		SELECT m.m_id AS id, m.m_pw AS pw, m.m_name AS name, 
+		m.m_nickname AS nickname,
+		m.m_phone AS phone, 
+		m.m_addr AS addr, 
+		m.m_type AS m_type,
+		m.m_num AS m_num, 
+		s.s_age AS age, 
+		s.s_carenum AS careNum, 
+		s.s_picture AS picture
+        FROM member m join sitter s on m.m_num = s.m_num
+        WHERE s.m_num = #{m_num}
+	</select>
+	
+	<select id="selectAllPetSitter" resultType="com.example.pet.domain.PetSitter">
+		SELECT m.m_id AS id, m.m_pw AS pw, m.m_name AS name,m.m_nickname AS nickname,m.m_phone AS phone,m.m_addr AS addr,m.m_type AS m_type,m.m_num AS m_num,s.s_age AS age,s.s_carenum AS careNum,s.s_picture AS picture
+		FROM member m join sitter s on m.m_num = s.m_num 
+	</select>
+	
+	<!-- 펫시터 등록 -->
+	<insert id="insertPetSitter" parameterType="com.example.pet.domain.PetSitter">
+		<selectKey keyProperty="m_num" resultType="int" order="BEFORE">
+        	 SELECT seq_mem.currval AS m_num FROM DUAL          
+     	</selectKey>
+		INSERT INTO SITTER(m_num, s_age, s_carenum, s_picture)
+		VALUES (#{m_num}, #{age}, #{careNum}, #{picture})
+	</insert>
+	
+	<!-- 펫시터 정보 수정 -->
+	<update id="updatePetSitter" parameterType="com.example.pet.domain.PetSitter">
+		UPDATE SITTER
+		SET
+			s_age = #{age}, 
+			s_carenum = #{careNum}, 
+			s_picture = #{picture}
+        WHERE 
+        	m_num = #{m_num}
+	</update>
+	
+	<!-- 펫시터 정보 수정 -->
+	<update id="updateCareNum" parameterType="int">
+		UPDATE SITTER
+		SET s_carenum = s_carenum + 1
+        WHERE m_num = #{m_num}
+	</update>
+	
+	<!-- 펫시터 삭제 -->
+	<delete id="deletePetSitter" parameterType="int">
+		DELETE SITTER
+		WHERE m_num = #{m_num}
+	</delete>
+
+</mapper>

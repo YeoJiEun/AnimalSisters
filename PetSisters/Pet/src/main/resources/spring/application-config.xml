@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xmlns:context="http://www.springframework.org/schema/context"
+   xmlns:mybatis="http://mybatis.org/schema/mybatis-spring"
+   xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
+   xmlns:tx="http://www.springframework.org/schema/tx"
+   xmlns:c="http://www.springframework.org/schema/c"
+   xsi:schemaLocation="http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring-1.2.xsd
+      http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+      http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+      http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+    
+    <!-- Annotation 기반 트랜잭션 설정 활성화 --> 
+   <tx:annotation-driven transaction-manager="transactionManager" />
+
+   <!-- DAO bean scan 또는 명시적 설정 --> 
+   <!-- <context:component-scan base-package="com.example"/> 
+ -->   
+   <!-- @Service, @Repository애노테이션을 붙혀진 클래스를 빈으로 등록 -->
+   <context:component-scan base-package="com.example">
+      <context:exclude-filter expression="org.springframework.stereotype.Controller" type="annotation"/>
+   </context:component-scan>
+   
+   <context:annotation-config />
+    
+     
+   <!-- data source 설정 --> 
+   <bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource"> 
+      <property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" />
+      <property name="url" value="jdbc:oracle:thin:@202.20.119.117:1521:orcl" />
+      <property name="username" value="swsd01_1" /> 
+      <property name="password" value="swsd01_1" /> 
+   </bean> 
+   
+   <!-- MyBatis SqlSessionFactoryBean 생성 --> 
+   <bean id="sqlSessionFactoryBean" class="org.mybatis.spring.SqlSessionFactoryBean"> 
+      <property name="typeAliasesPackage" value="com.example.model" /> 
+      <property name="dataSource" ref="dataSource" /> 
+      <property name="configLocation" value="classpath:/mybatis-config.xml" /> 
+      <property name="mapperLocations"> 
+         <array>
+            <value>classpath*:/com/example/repository/mapper/**/*.xml</value>
+         </array> 
+      </property>
+      <!-- <property name="mapperLocations" value="classpath:/com/example/repository/mapper/**/*.xml" />  -->
+   </bean> 
+   
+   <!-- MyBatis SqlSessionTemplate bean 생성 --> 
+   <bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate"> 
+      <constructor-arg name="sqlSessionFactory" ref="sqlSessionFactoryBean" /> 
+   </bean>
+
+   <!-- MyBatis MapperScannerConfigurer 설정: Mapper interface scan 및 mapper 객체(bean) 자동 생성 --> 
+   <mybatis:scan base-package="com.example.repository.mapper" />
+
+   <!-- 트랜잭션 관리자 설정 -->
+   <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager"> 
+      <property name="dataSource" ref="dataSource" /> 
+   </bean>
+   
+
+</beans>

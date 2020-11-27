@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.repository.mapper.UsedMarketMapper">
+	<cache />
+
+	<sql id="BaseColumns">
+		u_num AS uNum,
+		m_num AS mNum,
+		g_num AS gNum,
+		u_title AS uTitle,
+		u_content AS uContent,
+		u_usedate AS uUsedate,
+		u_expiredate AS uExpiredate,
+		u_price AS uPrice,
+		u_date AS uDate,
+		u_completeTF AS uCompleteTF,		
+		u_hits AS uHits
+	</sql>
+
+
+	<!-- 모든 UsedMarket 찾기 -->
+	<select id="selectAllUsedMarket" resultType="com.example.pet.domain.UsedMarket">
+		SELECT USED_MARKET.U_NUM AS uNum,
+			   MEMBER.M_NICKNAME AS mNickname, 
+			   USED_MARKET.U_TITLE AS uTitle,
+			   USED_MARKET.U_CONTENT AS uContent,
+			   TO_CHAR(USED_MARKET.U_DATE, 'YYYY-MM-DD') AS uDate, 
+			   USED_MARKET.U_COMPLETETF AS uCompleteTF,
+			   USED_MARKET.U_HITS AS uHits
+		FROM USED_MARKET JOIN MEMBER ON USED_MARKET.M_NUM = MEMBER.M_NUM 
+		ORDER BY USED_MARKET.U_NUM
+	</select>
+	
+	<!-- 조회순 내림차순 5개 UsedMarket 찾기 -->
+	<select id="selectDescHitsUsedMarket" resultType="com.example.pet.domain.UsedMarket">
+		SELECT U_NUM AS uNum,
+			   U_TITLE AS uTitle
+		FROM (SELECT U_NUM, U_TITLE
+			  FROM USED_MARKET 
+			  ORDER BY U_HITS DESC)
+		WHERE ROWNUM &lt; 6
+	</select>
+
+ 	<!-- findValue로 Question 찾기 -->
+	<select id="selectUsedMarketByFindValue" parameterType="String" resultType="com.example.pet.domain.UsedMarket">
+		SELECT USED_MARKET.U_NUM AS uNum,
+			   MEMBER.M_NICKNAME AS mNickname, 
+			   USED_MARKET.U_TITLE AS uTitle,
+			   USED_MARKET.U_CONTENT AS uContent,
+			   TO_CHAR(USED_MARKET.U_DATE, 'YYYY-MM-DD') AS uDate, 
+			   USED_MARKET.U_COMPLETETF AS uCompleteTF,
+			   USED_MARKET.U_HITS AS uHits
+		FROM USED_MARKET JOIN MEMBER ON USED_MARKET.M_NUM = MEMBER.M_NUM 
+		WHERE USED_MARKET.U_TITLE LIKE '%'||#{findValue}||'%'
+			OR USED_MARKET.U_CONTENT LIKE '%'||#{findValue}||'%'
+			OR MEMBER.M_NICKNAME LIKE '%'||#{findValue}||'%'	
+		ORDER BY USED_MARKET.U_NUM
+		<!-- 댓글도 찾을건지 결정하기.... -->
+	</select>
+	
+	<!-- u_num으로 UsedMarket 찾기 -->
+	<select id="selectUsedMarketByNum" parameterType="int" resultType="com.example.pet.domain.UsedMarket">
+		SELECT USED_MARKET.U_NUM AS uNum,
+			   USED_MARKET.M_NUM AS mNum,
+			   USED_MARKET.G_NUM AS gNum,
+			   USED_MARKET.U_TITLE AS uTitle,
+			   USED_MARKET.U_CONTENT AS uContent,
+			   USED_MARKET.U_USEDATE AS uUsedate,
+			   TO_CHAR(USED_MARKET.U_EXPIREDATE, 'YYYY-MM-DD') AS uExpiredate, 
+			   USED_MARKET.U_PRICE AS uPrice,
+			   TO_CHAR(USED_MARKET.U_DATE, 'YYYY-MM-DD') AS uDate, 
+			   USED_MARKET.U_COMPLETETF AS uCompleteTF,
+			   USED_MARKET.U_HITS AS uHits,
+			   MEMBER.M_NICKNAME AS mNickname, 
+			   MEMBER.M_TYPE AS mType,
+			   GOODS_TYPE.G_TYPE AS gType
+		FROM USED_MARKET JOIN MEMBER ON USED_MARKET.M_NUM = MEMBER.M_NUM 
+						 JOIN GOODS_TYPE ON USED_MARKET.G_NUM = GOODS_TYPE.G_NUM
+		WHERE USED_MARKET.U_NUM = #{uNum}
+		ORDER BY USED_MARKET.U_NUM
+	</select>
+	
+	<!-- goods_type으로 UsedMarket 찾기 -->
+	<select id="selectUsedMarketByGoodsType" parameterType="int" resultType="com.example.pet.domain.UsedMarket">
+	   SELECT USED_MARKET.U_NUM AS uNum,
+			   MEMBER.M_NICKNAME AS mNickname, 
+			   USED_MARKET.U_TITLE AS uTitle,
+			   USED_MARKET.U_CONTENT AS uContent,
+			   TO_CHAR(USED_MARKET.U_DATE, 'YYYY-MM-DD') AS uDate, 
+			   USED_MARKET.U_COMPLETETF AS uCompleteTF,
+			   USED_MARKET.U_HITS AS uHits
+		FROM USED_MARKET JOIN MEMBER ON USED_MARKET.M_NUM = MEMBER.M_NUM 
+						 JOIN GOODS_TYPE ON USED_MARKET.G_NUM = GOODS_TYPE.G_NUM
+		WHERE USED_MARKET.G_NUM = #{gNum}
+		ORDER BY USED_MARKET.U_NUM
+	</select>
+	
+	<!-- 추가된 u_num 찾기 -->
+ 	<select id="selectUsedMarketNum"  resultType="int">
+		SELECT U_NUM AS uNum
+		FROM USED_MARKET
+	</select>
+	
+	<!-- m_num으로 UsedMarket 찾기 -->
+	<select id="selectUsedMarketBymNum" parameterType="int" resultType="com.example.pet.domain.UsedMarket">
+		SELECT USED_MARKET.U_NUM AS uNum,
+			   USED_MARKET.M_NUM AS mNum,
+			   USED_MARKET.G_NUM AS gNum,
+			   USED_MARKET.U_TITLE AS uTitle,
+			   USED_MARKET.U_CONTENT AS uContent,
+			   USED_MARKET.U_USEDATE AS uUsedate,
+			   TO_CHAR(USED_MARKET.U_EXPIREDATE, 'YYYY-MM-DD') AS uExpiredate, 
+			   USED_MARKET.U_PRICE AS uPrice,
+			   TO_CHAR(USED_MARKET.U_DATE, 'YYYY-MM-DD') AS uDate, 
+			   USED_MARKET.U_COMPLETETF AS uCompleteTF,
+			   USED_MARKET.U_HITS AS uHits,
+			   MEMBER.M_NICKNAME AS mNickname, 
+			   MEMBER.M_TYPE AS mType,
+			   GOODS_TYPE.G_TYPE AS gType
+		FROM USED_MARKET JOIN MEMBER ON USED_MARKET.M_NUM = MEMBER.M_NUM 
+						 JOIN GOODS_TYPE ON USED_MARKET.G_NUM = GOODS_TYPE.G_NUM
+		WHERE USED_MARKET.M_NUM = #{mNum}
+		ORDER BY USED_MARKET.U_NUM
+	</select>
+	
+	
+	
+
+	<!-- UsedMarket 추가 -->
+	<insert id="insertUsedMarket" parameterType="com.example.pet.domain.UsedMarket">
+		INSERT INTO USED_MARKET(u_num, m_num, g_num, u_title, u_content, u_usedate, u_expiredate, u_price, u_date, u_completeTF, u_hits)
+		VALUES (#{uNum}, #{mNum}, #{gNum}, #{uTitle}, #{uContent}, #{uUsedate}, #{uExpiredate}, #{uPrice}, SYSDATE, 'F', 0)
+	</insert>
+	
+	<!-- UsedMarket NoExpiredate 추가 -->
+	<insert id="insertUsedMarketNoExpiredate" parameterType="com.example.pet.domain.UsedMarket">
+		INSERT INTO USED_MARKET(u_num, m_num, g_num, u_title, u_content, u_usedate, u_expiredate, u_price, u_date, u_completeTF, u_hits)
+		VALUES (#{uNum}, #{mNum}, #{gNum}, #{uTitle}, #{uContent}, #{uUsedate}, NULL, #{uPrice}, SYSDATE, 'F', 0)
+	</insert>
+
+	<!-- UsedMarket 수정 -->
+	<update id="updateUsedMarket" parameterType="com.example.pet.domain.UsedMarket">
+		UPDATE USED_MARKET
+		SET g_num = #{gNum}, u_title = #{uTitle}, u_content = #{uContent}, u_usedate = #{uUsedate}, u_expiredate = #{uExpiredate}, u_price = #{uPrice}, u_date = SYSDATE
+		WHERE u_num = #{uNum}
+	</update>
+	
+	<!-- UsedMarket NoExpiredate 수정 -->
+	<update id="updateUsedMarketNoExpiredate" parameterType="com.example.pet.domain.UsedMarket">
+		UPDATE USED_MARKET
+		SET g_num = #{gNum}, u_title = #{uTitle}, u_content = #{uContent}, u_usedate = #{uUsedate}, u_expiredate = NULL, u_price = #{uPrice}, u_date = SYSDATE
+		WHERE u_num = #{uNum}
+	</update>
+	
+	<!-- UsedMarket NoUsedate 수정 -->
+	<update id="updateUsedMarketNoUsedate" parameterType="com.example.pet.domain.UsedMarket">
+		UPDATE USED_MARKET
+		SET g_num = #{gNum}, u_title = #{uTitle}, u_content = #{uContent}, u_usedate = NULL, u_expiredate = #{uExpiredate}, u_price = #{uPrice}, u_date = SYSDATE
+		WHERE u_num = #{uNum}
+	</update>
+	
+	<!-- UsedMarket NoExpireUsedate 수정 -->
+	<update id="updateUsedMarketNoExpireUsedate" parameterType="com.example.pet.domain.UsedMarket">
+		UPDATE USED_MARKET
+		SET g_num = #{gNum}, u_title = #{uTitle}, u_content = #{uContent}, u_usedate = NULL, u_expiredate = NULL, u_price = #{uPrice}, u_date = SYSDATE
+		WHERE u_num = #{uNum}
+	</update>
+	
+	<!-- UsedMarket U_COMPLETETF 수정 -->
+	<update id="updateUsedMarketTF" parameterType="int">
+		UPDATE USED_MARKET
+		SET u_completeTF = 'T'
+		WHERE u_num = #{uNum}
+	</update>
+	
+	<!-- UsedMarket hits ++ -->
+	<update id="updateUsedMarketHits" parameterType="int">
+		UPDATE USED_MARKET
+		SET u_hits = u_hits + 1
+		WHERE u_num = #{uNum}
+	</update>
+	
+	<!-- UsedMarket 삭제 -->
+	<delete id="deleteUsedMarket" parameterType="int">
+		DELETE FROM USED_MARKET
+		WHERE u_num = #{uNum}
+	</delete>
+</mapper>

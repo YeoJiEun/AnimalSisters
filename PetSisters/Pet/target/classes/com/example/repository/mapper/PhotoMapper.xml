@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.repository.mapper.PhotoMapper">
+	<cache />
+
+	<sql id="Photo">
+		photo_num AS photoNum,
+		u_num AS uNum,
+		photo_path AS photoPath
+	</sql>
+
+	<!-- 모든 Photo 찾기 -->
+	<select id="selectAllPhoto" resultType="com.example.pet.domain.Photo">
+		SELECT PHOTO_NUM AS photoNum,
+			   U_NUM AS uNum, 
+			   PHOTO_PATH AS photoPath
+		FROM PHOTO
+		ORDER BY PHOTO.PHOTO_NUM
+	</select>
+	
+	<!-- uNum에 대한 Photo 찾기 -->
+	<select id="selectPhotoByuNum" parameterType="int" resultType="com.example.pet.domain.Photo">
+		SELECT PHOTO.PHOTO_NUM AS photoNum,
+			   PHOTO.U_NUM AS uNum, 
+			   PHOTO.PHOTO_PATH AS photoPath
+		FROM PHOTO JOIN USED_MARKET ON PHOTO.U_NUM = USED_MARKET.U_NUM 
+		WHERE PHOTO.U_NUM = #{uNum}
+		ORDER BY PHOTO.PHOTO_NUM
+	</select>
+	
+	<!-- 추가된 photo_num 찾기 -->
+ 	<select id="selectPhotoNum"  resultType="int">
+		SELECT PHOTO_NUM AS photoNum
+		FROM PHOTO
+		ORDER BY PHOTO_NUM
+	</select>
+	
+	<!-- Photo 추가 -->
+	<insert id="insertPhoto" parameterType="com.example.pet.domain.Photo">
+		INSERT INTO PHOTO(PHOTO_NUM, U_NUM, PHOTO_PATH)
+		VALUES (#{photoNum}, #{uNum}, #{photoPath})
+	</insert>
+	
+	<!-- Photo 수정 -->
+	<update id="updatePhoto" parameterType="com.example.pet.domain.Photo">
+		UPDATE PHOTO 
+		SET PHOTO_PAHT = #{photoPath}
+		WHERE PHOTO_NUM = #{photoNum}
+	</update>
+	
+	<!-- Photo 삭제 -->
+	<delete id="deletePhoto" parameterType="int">
+		DELETE FROM PHOTO
+		WHERE PHOTO_NUM = #{photoNum}
+	</delete>
+	
+</mapper>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.repository.mapper.BoardMapper">
+
+	<sql id="BaseColumns">
+		b_num, m_num, b_date, b_where, b_price AS price, b_detail, b_type, b_title, b_picture
+	</sql>
+	
+
+	<!-- 모든 Board 찾기 -->
+	<select id="selectAllBoard" resultType="com.example.pet.domain.Board">
+		SELECT <include refid="BaseColumns"/>
+		FROM BOARD 
+	</select>
+
+     <!-- b_num으로 BoardDetail 찾기 -->
+	<select id="selectBoardByNum" parameterType="int" resultType="com.example.pet.domain.Board">
+		SELECT <include refid="BaseColumns"/>
+		FROM BOARD
+		WHERE b_num = #{b_num}
+	</select>
+	
+	<!-- findValue로 Board 찾기 -->
+	<select id="selectBoardByFindValue" parameterType="String" resultType="com.example.pet.domain.Board">
+		SELECT  <include refid="BaseColumns"/>
+		FROM BOARD	
+		WHERE B_TITLE LIKE '%'||#{findValue}||'%'
+			OR B_detail LIKE '%'||#{findValue}||'%'
+			OR B_WHERE LIKE '%'||#{findValue}||'%'
+			OR B_type LIKE '%'||#{findValue}||'%'
+	
+	</select>
+	<select id="selectHaveBoardNum" resultType="int">
+		select b.b_num AS b_num
+		from board b, member m
+		where b.m_num = m.m_num and m.m_num = #{m_num}
+	</select>
+	
+	<!-- 추가된 board_num 찾기 -->
+ 	<select id="selectBoardNum"  resultType="int">
+		SELECT b_num
+		FROM board
+	</select>
+	
+	<!-- board 추가 -->
+	<insert id="insertBoard" parameterType="com.example.pet.domain.Board">
+		INSERT INTO BOARD (b_num, m_num, b_date, b_where, b_price, b_detail, b_type, b_title, b_picture)
+		VALUES (#{b_num}, #{m_num}, SYSDATE, #{b_where}, #{price}, #{b_detail}, #{b_type}, #{b_title}, #{b_picture})
+	</insert>
+	
+	<!-- board 추가 -->
+   <insert id="insertBoardNPicture" parameterType="com.example.pet.domain.Board">
+      INSERT INTO BOARD (b_num, m_num, b_date, b_where, b_price, b_detail, b_type, b_title, b_picture)
+      VALUES (#{b_num}, #{m_num}, SYSDATE, #{b_where}, #{price}, #{b_detail}, #{b_type}, #{b_title}, #{b_picture})
+   </insert>
+	
+	<!-- Board 삭제 -->
+	<delete id="deleteBoard" parameterType="int" >
+		DELETE FROM BOARD
+		WHERE b_num = #{b_num}
+	</delete>
+	
+	<!-- Board 수정 -->
+	<update id="updateBoard" parameterType="com.example.pet.domain.Board">
+		UPDATE BOARD
+		SET b_detail = #{b_detail}, b_price = #{price}, b_type = #{b_type}, b_title = #{b_title} , b_where = #{b_where}, b_picture = #{b_picture}
+		WHERE b_num = #{b_num}
+	</update>
+
+	
+</mapper>
